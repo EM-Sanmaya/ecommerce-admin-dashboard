@@ -1,0 +1,125 @@
+/* ---------- RESET ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ---------- LAYOUT ---------- */
+.admin-root {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #0f172a, #020617);
+  color: white;
+  padding: 24px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #cbd5f5;
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.nav-item:hover {
+  background: #1e293b;
+  color: white;
+}
+
+.logout {
+  margin-top: auto;
+  color: #f87171;
+}
+
+/* ---------- MAIN ---------- */
+.main {
+  flex: 1;
+  padding: 32px;
+}
+
+/* ---------- CARDS ---------- */
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+/* ---------- FORMS ---------- */
+.input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5f5;
+  font-size: 14px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: #6366f1;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #4f46e5;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+/* ---------- TABLE ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #e2e8f0;
+  padding: 12px;
+  text-align: left;
+  font-size: 14px;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
