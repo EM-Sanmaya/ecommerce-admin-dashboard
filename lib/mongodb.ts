@@ -1,33 +1,34 @@
-console.log("ENV:", process.env.MONGODB_URI);
+import mongoose, { Mongoose } from "mongoose";
 
-import mongoose from "mongoose";
+const MONGODB_URI: string = process.env.MONGODB_URI ?? "";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
+if (!MONGODB_URI) {
+  throw new Error("Please define the MONGODB_URI environment variable");
 }
 
-const globalWithMongoose = globalThis as typeof globalThis & {
+type MongooseCache = {
+  conn: Mongoose | null;
+  promise: Promise<Mongoose> | null;
+};
+
+const globalWithMongoose = global as unknown as {
   mongoose?: MongooseCache;
 };
 
-if (!globalWithMongoose.mongoose) {
-  globalWithMongoose.mongoose = { conn: null, promise: null };
-}
+const cached: MongooseCache =
+  globalWithMongoose.mongoose ?? { conn: null, promise: null };
 
-const cached: MongooseCache = globalWithMongoose.mongoose;
-
-export async function connectDB() {
-  if (cached.conn) return cached.conn;
+export async function connectDB(): Promise<Mongoose> {
+  if (cached.conn) {
+    return cached.conn;
+  }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
-      dbName: "ecommerce-admin-dashboard",
-    });
+    cached.promise = mongoose.connect(MONGODB_URI).then((m) => m);
   }
 
   cached.conn = await cached.promise;
+  globalWithMongoose.mongoose = cached;
+
   return cached.conn;
 }
