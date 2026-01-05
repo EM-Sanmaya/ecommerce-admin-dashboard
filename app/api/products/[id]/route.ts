@@ -1,18 +1,12 @@
-// FORCE_REBUILD_NEXT_ROUTE_HANDLER
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
-
 export async function DELETE(
-  request: NextRequest,
-  context: RouteContext
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await context.params;
   await connectDB();
-  await Product.findByIdAndDelete(id);
+  await Product.findByIdAndDelete(params.id);
   return NextResponse.json({ success: true });
 }
