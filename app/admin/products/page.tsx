@@ -1,66 +1,68 @@
 "use client";
+import Image from "next/image";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function AddProduct() {
-  const [name, setName] = useState("");
-  const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
-  const [units, setUnits] = useState("");
-  const [image, setImage] = useState("");
+/* ✅ Define Product type */
+type Product = {
+  _id: string;
+  name: string;
+  category: string;
+  price: number;
+  units: number;
+  image?: string;
+};
 
-  async function submit() {
-    const res = await fetch("/api/products", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        category,
-        price,
-        units,
-        image, // optional
-      }),
-    });
+export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    const data = await res.json();
+  useEffect(() => {
+    fetch("/api/products", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data: Product[]) => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
-    if (!res.ok) {
-      alert(data.message || "Error adding product");
-      return;
-    }
-
-    alert("Product added successfully!");
-    setName("");
-    setCategory("");
-    setPrice("");
-    setUnits("");
-    setImage("");
+  if (loading) {
+    return <p style={{ padding: "20px" }}>Loading products...</p>;
   }
 
   return (
-    <div style={{ padding: "30px", maxWidth: "400px" }}>
-      <h1>Add Product</h1>
+    <div style={{ padding: "30px" }}>
+      <h1>Products</h1>
 
-      <input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-      <br />
+      {products.length === 0 && <p>No products found.</p>}
 
-      <input placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} />
-      <br />
+      {products.map((p) => (
+        <div
+          key={p._id}
+          style={{
+            border: "1px solid #ccc",
+            margin: "10px 0",
+            padding: "10px",
+          }}
+        >
+          <h3>{p.name}</h3>
+          <p>Category: {p.category}</p>
+          <p>Price: ₹{p.price}</p>
+          <p>Units: {p.units}</p>
 
-      <input placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} />
-      <br />
+          {p.image && (
+            <Image
+  src={p.image}
+  alt={p.name}
+  width={120}
+  height={120}
+  style={{ marginTop: "10px" }}
+/>
 
-      <input placeholder="Units" value={units} onChange={(e) => setUnits(e.target.value)} />
-      <br />
-
-      <input
-        placeholder="Image URL (optional)"
-        value={image}
-        onChange={(e) => setImage(e.target.value)}
-      />
-      <br /><br />
-
-      <button onClick={submit}>Add Product</button>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
