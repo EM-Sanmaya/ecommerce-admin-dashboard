@@ -2,15 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 
-type Context = {
-  params: Promise<{
-    id: string;
-  }>;
+type RouteContext = {
+  params: Promise<{ id: string }>;
 };
 
 export async function DELETE(
   request: NextRequest,
-  context: Context
+  context: RouteContext
 ) {
   try {
     const { id } = await context.params;
