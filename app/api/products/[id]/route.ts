@@ -4,12 +4,13 @@ import Product from "@/models/Product";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    await connectDB();
+    const { id } = await context.params;
 
-    await Product.findByIdAndDelete(params.id);
+    await connectDB();
+    await Product.findByIdAndDelete(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {
