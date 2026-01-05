@@ -1,9 +1,9 @@
 "use client";
-import Image from "next/image";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-/* ✅ Define Product type */
+/* ---------- TYPES ---------- */
 type Product = {
   _id: string;
   name: string;
@@ -14,18 +14,55 @@ type Product = {
 };
 
 export default function ProductsPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
+  /* ---------- INITIAL FETCH (SAFE) ---------- */
   useEffect(() => {
-    fetch("/api/products", { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data: Product[]) => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    let active = true;
+
+    async function loadProducts() {
+      try {
+        const res = await fetch("/api/products", { cache: "no-store" });
+        const data: Product[] = await res.json();
+        if (active) setProducts(data);
+      } catch {
+        // ignore
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      active = false;
+    };
   }, []);
+
+  /* ---------- REFRESH AFTER DELETE ---------- */
+  async function refreshProducts() {
+    const res = await fetch("/api/products", { cache: "no-store" });
+    const data: Product[] = await res.json();
+    setProducts(data);
+  }
+
+  /* ---------- DELETE ---------- */
+  async function deleteProduct(id: string) {
+    if (!confirm("Delete this product?")) return;
+
+    const res = await fetch(`/api/products?id=${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      alert("Failed to delete product");
+      return;
+    }
+
+    refreshProducts();
+  }
 
   if (loading) {
     return <p style={{ padding: "20px" }}>Loading products...</p>;
@@ -33,17 +70,31 @@ export default function ProductsPage() {
 
   return (
     <div style={{ padding: "30px" }}>
-      <h1>Products</h1>
+      {/* ---------- HEADER ---------- */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>Products</h1>
+        <button onClick={() => router.push("/admin/add-product")}>
+          + Add Product
+        </button>
+      </div>
 
+      {/* ---------- EMPTY STATE ---------- */}
       {products.length === 0 && <p>No products found.</p>}
 
+      {/* ---------- LIST ---------- */}
       {products.map((p) => (
         <div
           key={p._id}
           style={{
             border: "1px solid #ccc",
-            margin: "10px 0",
-            padding: "10px",
+            marginTop: "15px",
+            padding: "15px",
           }}
         >
           <h3>{p.name}</h3>
@@ -51,16 +102,22 @@ export default function ProductsPage() {
           <p>Price: ₹{p.price}</p>
           <p>Units: {p.units}</p>
 
-          {p.image && (
-            <Image
-  src={p.image}
-  alt={p.name}
-  width={120}
-  height={120}
-  style={{ marginTop: "10px" }}
-/>
+          {/* ---------- ACTIONS ---------- */}
+          <div style={{ marginTop: "10px" }}>
+            <button
+              onClick={() => router.push(`/admin/products/${p._id}`)}
+              style={{ marginRight: "10px" }}
+            >
+              Update
+            </button>
 
-          )}
+            <button
+              onClick={() => deleteProduct(p._id)}
+              style={{ color: "red" }}
+            >
+              Delete
+            </button>
+          </div>
         </div>
       ))}
     </div>
