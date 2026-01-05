@@ -2,22 +2,23 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 
-/* ================= GET ALL PRODUCTS ================= */
+/* ========== GET ALL PRODUCTS ========== */
 export async function GET() {
   await connectDB();
   const products = await Product.find();
   return NextResponse.json(products);
 }
 
-/* ================= CREATE PRODUCT ================= */
+/* ========== CREATE PRODUCT ========== */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { name, category, price, units, image } = body;
 
-    if (!name || !category || !price || !units || !image) {
+    // REQUIRED fields only
+    if (!name || !category || !price || !units) {
       return NextResponse.json(
-        { message: "All fields including image are required" },
+        { message: "Name, category, price and units are required" },
         { status: 400 }
       );
     }
@@ -39,11 +40,12 @@ export async function POST(req: Request) {
       category,
       price: priceNum,
       units: unitsNum,
-      image, // ✅ THIS WAS MISSING
+      image: image || "", // ✅ IMAGE OPTIONAL
     });
 
     return NextResponse.json(product, { status: 201 });
-  } catch  {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { message: "Server error while creating product" },
       { status: 500 }
@@ -51,7 +53,7 @@ export async function POST(req: Request) {
   }
 }
 
-/* ================= UPDATE PRODUCT ================= */
+/* ========== UPDATE PRODUCT ========== */
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
@@ -64,7 +66,7 @@ export async function PUT(req: Request) {
       category,
       price,
       units,
-      ...(image && { image }),
+      ...(image !== undefined && { image }),
     });
 
     return NextResponse.json({ success: true });
@@ -76,7 +78,7 @@ export async function PUT(req: Request) {
   }
 }
 
-/* ================= DELETE PRODUCT ================= */
+/* ========== DELETE PRODUCT ========== */
 export async function DELETE(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
