@@ -4,35 +4,58 @@ import Admin from "@/models/Admin";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { email, password } = body;
+  try {
+    const { email, password } = await req.json();
 
-  console.log("LOGIN ATTEMPT:", email, password);
+    console.log("LOGIN ATTEMPT:", email, password);
 
-  await connectDB();
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: "Missing credentials" },
+        { status: 400 }
+      );
+    }
 
-  const admin = await Admin.findOne({ email });
-  console.log("ADMIN FOUND:", !!admin);
+    await connectDB();
 
-  if (!admin) {
-    return NextResponse.json({ error: "No admin" }, { status: 401 });
+    const admin = await Admin.findOne({ email }).select("+password");
+
+
+    console.log("ADMIN FOUND:", !!admin);
+
+    if (!admin || typeof admin.password !== "string") {
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    
+
+    const match = await bcrypt.compare(password, admin.password);
+    
+
+    if (!match) {
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    const res = NextResponse.json({ success: true });
+
+    res.cookies.set("admin-auth", "true", {
+      httpOnly: true,
+      path: "/",
+      sameSite: "lax",
+    });
+
+    return res;
+  } catch (error) {
+    console.error("LOGIN ERROR:", error);
+    return NextResponse.json(
+      { error: "Login failed" },
+      { status: 500 }
+    );
   }
-
-  console.log("HASH IN DB:", admin.password);
-
-  const match = await bcrypt.compare(password, admin.password);
-  console.log("PASSWORD MATCH:", match);
-
-  if (!match) {
-    return NextResponse.json({ error: "Wrong password" }, { status: 401 });
-  }
-
-  const res = NextResponse.json({ success: true });
-
-  res.cookies.set("admin-auth", "true", {
-    httpOnly: true,
-    path: "/",
-  });
-
-  return res;
 }

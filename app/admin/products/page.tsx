@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 /* ---------- TYPES ---------- */
 type Product = {
@@ -18,7 +19,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  /* ---------- INITIAL FETCH (SAFE) ---------- */
+  /* ---------- INITIAL FETCH ---------- */
   useEffect(() => {
     let active = true;
 
@@ -41,18 +42,11 @@ export default function ProductsPage() {
     };
   }, []);
 
-  /* ---------- REFRESH AFTER DELETE ---------- */
-  async function refreshProducts() {
-    const res = await fetch("/api/products", { cache: "no-store" });
-    const data: Product[] = await res.json();
-    setProducts(data);
-  }
-
   /* ---------- DELETE ---------- */
   async function deleteProduct(id: string) {
     if (!confirm("Delete this product?")) return;
 
-    const res = await fetch(`/api/products?id=${id}`, {
+    const res = await fetch(`/api/products/${id}`, {
       method: "DELETE",
     });
 
@@ -61,7 +55,7 @@ export default function ProductsPage() {
       return;
     }
 
-    refreshProducts();
+    setProducts((prev) => prev.filter((p) => p._id !== id));
   }
 
   if (loading) {
@@ -84,7 +78,7 @@ export default function ProductsPage() {
         </button>
       </div>
 
-      {/* ---------- EMPTY STATE ---------- */}
+      {/* ---------- EMPTY ---------- */}
       {products.length === 0 && <p>No products found.</p>}
 
       {/* ---------- LIST ---------- */}
@@ -97,12 +91,32 @@ export default function ProductsPage() {
             padding: "15px",
           }}
         >
+          {/* IMAGE */}
+          {p.image && (
+            <div
+              style={{
+                width: "150px",
+                height: "150px",
+                position: "relative",
+                marginBottom: "10px",
+              }}
+            >
+              <Image
+                src={p.image}
+                alt={p.name}
+                fill
+                sizes="150px"
+                style={{ objectFit: "cover", borderRadius: "6px" }}
+              />
+            </div>
+          )}
+
           <h3>{p.name}</h3>
           <p>Category: {p.category}</p>
           <p>Price: ₹{p.price}</p>
           <p>Units: {p.units}</p>
 
-          {/* ---------- ACTIONS ---------- */}
+          {/* ACTIONS */}
           <div style={{ marginTop: "10px" }}>
             <button
               onClick={() => router.push(`/admin/products/${p._id}`)}
