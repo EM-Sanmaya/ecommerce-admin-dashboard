@@ -1,5 +1,6 @@
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
+import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import cloudinary from "../../../../lib/cloudinary";
@@ -77,6 +78,14 @@ try {
   revalidatePath("/admin/products");
 
  return NextResponse.json({ success: true });
+}
+// ================= FALLBACK POST FOR UPDATE (Vercel-safe) =================
+export async function POST(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  // Reuse the same logic as PUT
+  return PUT(req, { params });
 }
 
 // ================= DELETE PRODUCT =================
