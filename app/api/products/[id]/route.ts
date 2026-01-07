@@ -1,8 +1,10 @@
+export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import cloudinary from "../../../../lib/cloudinary";
 import { revalidatePath } from "next/cache";
+
 
 import type {
   UploadApiResponse,
