@@ -21,27 +21,24 @@ export default function EditProductForm({ product }: Props) {
   const [category, setCategory] = useState(product.category);
   const [price, setPrice] = useState(product.price);
   const [units, setUnits] = useState(product.units);
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
-    // ✅ FORM DATA (NOT JSON)
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("category", category);
-    formData.append("price", String(price));
-    formData.append("units", String(units));
-
-    if (imageFile) {
-      formData.append("image", imageFile);
-    }
-
+    // ✅ JSON ONLY (MATCHES BACKEND)
     const res = await fetch(`/api/products/${product._id}`, {
       method: "PUT",
-      body: formData, // ✅ IMPORTANT
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        category,
+        price,
+        units,
+      }),
     });
 
     setLoading(false);
@@ -85,14 +82,7 @@ export default function EditProductForm({ product }: Props) {
         />
       </div>
 
-      <div>
-        <label>Change Image</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-        />
-      </div>
+      {/* Image update intentionally disabled to prevent production 500 errors */}
 
       <button type="submit" disabled={loading}>
         {loading ? "Saving..." : "Save"}
