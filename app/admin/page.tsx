@@ -1,6 +1,8 @@
+export const dynamic = "force-dynamic";
 import Product from "@/models/Product";
 import { connectDB } from "@/lib/mongodb";
 import DashboardCharts from "./DashboardCharts";
+
 
 type ProductType = {
   _id: string;
