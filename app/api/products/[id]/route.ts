@@ -16,7 +16,17 @@ export async function PUT(
 ) {
   await connectDB();
 
-  const formData = await req.formData();
+  let formData: FormData;
+
+try {
+  formData = await req.formData();
+} catch {
+  return NextResponse.json(
+    { error: "Invalid form data" },
+    { status: 400 }
+  );
+}
+
 
   const updateData: {
     name?: string;
@@ -58,8 +68,13 @@ export async function PUT(
   }
 
   await Product.findByIdAndUpdate(params.id, updateData);
+  
 
-  return NextResponse.json({ success: true });
+// ✅ revalidate after update
+  revalidatePath("/admin");
+  revalidatePath("/admin/products");
+
+ return NextResponse.json({ success: true });
 }
 
 // ================= DELETE PRODUCT =================
