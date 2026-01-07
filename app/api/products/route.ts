@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
+import { revalidatePath } from "next/cache";
 
 /* ========== GET ALL PRODUCTS ========== */
 export async function GET() {
@@ -42,6 +43,9 @@ export async function POST(req: Request) {
       units: unitsNum,
       image: image || "", // ✅ IMAGE OPTIONAL
     });
+    // ✅ revalidate dashboard & products after ADD
+    revalidatePath("/admin");
+    revalidatePath("/admin/products");
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
