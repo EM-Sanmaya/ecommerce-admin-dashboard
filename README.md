@@ -2,9 +2,10 @@
 
 A full-stack **Ecommerce Admin Dashboard** built using **Next.js (App Router)** that enables secure admin authentication, complete product management (CRUD), image uploads using Cloudinary, real-time dashboard analytics, and deployment on Vercel.
 
- **Live Demo (dummy link):**  
+ **Live Demo :**  
  https://ecommerce-admin-dashboard-gules.vercel.app/ 
-
+ **Youtube Video Link :**  
+ https://youtu.be/e1DwT13Yc5U
 ---
 
 ##  Project Overview
