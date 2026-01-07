@@ -19,16 +19,28 @@ export async function PUT(
 ) {
   await connectDB();
 
-  let formData: FormData;
+ const contentType = req.headers.get("content-type") || "";
 
-try {
-  formData = await req.formData();
-} catch {
-  return NextResponse.json(
-    { error: "Invalid form data" },
-    { status: 400 }
-  );
+// ✅ CASE 1: JSON update (NO IMAGE)
+if (contentType.includes("application/json")) {
+  const body = await req.json();
+
+  await Product.findByIdAndUpdate(params.id, {
+    name: body.name,
+    category: body.category,
+    price: body.price,
+    units: body.units,
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/products");
+
+  return NextResponse.json({ success: true });
 }
+
+// ✅ CASE 2: multipart (kept for safety, not used now)
+const formData = await req.formData();
+
 
 
   const updateData: {
