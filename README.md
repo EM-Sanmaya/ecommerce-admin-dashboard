@@ -22,7 +22,7 @@ Admins can:
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
 - **Server-side rendering (SSR)** using Next.js App Router  
 - **Complete Product Management (CRUD)**  
@@ -34,7 +34,7 @@ Admins can:
 
 ---
 
-## 🔐 Demo Admin Credentials
+##  Demo Admin Credentials
 
 ```
 admin@gmail.com / admin123
@@ -65,20 +65,20 @@ vk@gmail.com    / vk
 
 ---
 
-## ⚙️ Setup & Installation
+##  Setup & Installation
 
-### 1️⃣ Clone Repository
+### 1️ Clone Repository
 ```bash
 git clone https://github.com/your-username/ecommerce-admin-dashboard.git
 cd ecommerce-admin-dashboard
 ```
 
-### 2️⃣ Install Dependencies
+### 2️ Install Dependencies
 ```bash
 npm install
 ```
 
-### 3️⃣ Environment Variables
+### 3️ Environment Variables
 
 Create `.env.local`:
 
@@ -90,7 +90,7 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-### 4️⃣ Run Locally
+### 4️ Run Locally
 ```bash
 npm run dev
 ```
@@ -102,7 +102,7 @@ http://localhost:3000
 
 ---
 
-## 🚀 Deployment
+##  Deployment
 
 - Push code to GitHub
 - Import repo into **Vercel**
@@ -112,7 +112,7 @@ http://localhost:3000
 
 ---
 
-## ✅ Project Status
+##  Project Status
 
 - ✔ Admin auth working
 - ✔ Product CRUD working
