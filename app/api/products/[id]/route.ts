@@ -1,5 +1,5 @@
 export const runtime = "nodejs";
-import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import cloudinary from "../../../../lib/cloudinary";
